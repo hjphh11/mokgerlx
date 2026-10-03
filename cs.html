@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Morphicons 普通 HTML 示例</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            gap: 2rem;
+        }
+        /* 美化按钮 */
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 1rem;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            color: #333;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 这是一个使用 Morphicons 的按钮示例 -->
+    <button id="toggle-button" aria-label="Toggle menu">
+        <morph-icon 
+            id="menu-icon"
+            icon="M4 6h16M4 12h16M4 18h16" 
+            label="Menu"
+            style="width: 24px; height: 24px; color: #333;"
+        ></morph-icon>
+    </button>
+
+    <p>点击图标，它会从菜单（Menu）平滑地变形为关闭（X）</p>
+
+    <script type="module">
+        // 1. 导入并定义自定义元素
+        import { defineMorphIcon } from 'https://esm.sh/morphicons/element';
+        
+        // 注册 <morph-icon> 标签
+        defineMorphIcon();
+
+        // 2. 获取元素引用
+        const menuIcon = document.getElementById('menu-icon');
+        const toggleButton = document.getElementById('toggle-button');
+
+        // 定义两个图标的数据（d 属性）
+        // 这里用的是 Lucide 图标的 d 值。
+        const MENU_D = 'M4 6h16M4 12h16M4 18h16'; // 菜单图标
+        const X_D = 'M18 6L6 18M6 6l12 12';      // 关闭图标
+
+        let isOpen = false;
+
+        // 3. 添加点击事件，切换图标
+        toggleButton.addEventListener('click', () => {
+            isOpen = !isOpen;
+            
+            // 使用 morphTo 方法，让图标平滑变形到目标状态
+            // 你也可以直接赋值 menuIcon.icon = X_D;
+            menuIcon.morphTo(X_D);
+            
+            // 更新按钮的 aria-label 以反映状态
+            toggleButton.setAttribute('aria-label', isOpen ? 'Close menu' : 'Toggle menu');
+        });
+
+        // (可选) 你也可以在页面加载后，通过属性直接改变图标
+        // setTimeout(() => {
+        //     menuIcon.icon = X_D;
+        // }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<style type="text/css">
+		.baoh{
+			height: auto;
+			width: 350px;
+			margin: 100px auto;
+			text-align: center;
+		}
+		.zh{
+			height: auto;
+			text-align: center;
+			margin: 20px 0 20px 0;
+		}
+		.zh span{
+			margin: auto;
+		}
+		.zh input{
+			width: 250px;
+			margin: auto;
+			
+		}
+		button{
+			width: 200px;
+			height: 60px;
+		}
+		button:hover{
+			background-color: blue;
+		}
+		.ts{
+			opacity: 0;
+			height: 0;
+			overflow: hidden;
+			text-align: center;
+			transition: all 0.6s;
+			line-height: 30px;
+		}
+		.tsxs{
+			height: 30px;
+			opacity: 1;
+			
+		}
+		.btu{
+			display: flex;
+			margin: auto;
+		}
+		.btu .dl{
+			margin: auto;
+		}
+		#zc{
+			margin: auto;
+		}
+		.wenz{
+			display: flex;
+			justify-content: space-between;	
+		}
+		.wenz p{
+			cursor: pointer;
+		}
+		.wenz p:hover{
+			color: red;
+		}
+		.zczh{
+			display: none;
+		}
+		.fh{
+			cursor: pointer;
+			display: none;
+			margin: 20px auto;
+		}
+	</style>
+</head>
+<body>
+		<div class="baoh">
+			<div class="zh">
+				<div style="display: flex;"><span>账号：</span><input type="text" id="zh"></div>
+					<div class="ts"></div>
+			</div>
+			<div class="zh">
+				<div style="display: flex;"><span>密码：</span><input type="password" id="mm"></div>
+				<div class="ts"></div>
+			</div>
+			<div class="zh qrmm" style="display: none;">
+				<div style="display: flex;"><span>确认密码：</span><input type="password" id="qrmm"></div>
+				<div class="ts"></div>
+			</div>
+			<div class="wenz">
+				<p data-name="wjmm">忘记密码</p>
+				<p data-name="zczh">注册账号</p>
+			</div>
+			<div class="btu">
+				<button id="dl" class="dl">登录</button>
+				<button id="zc" class="zc zczh">注册</button>
+			</div>
+			<div class="fh">
+				<p>返回登录</p>
+			</div>
+		</div>
+	<script type="text/javascript" charset="utf-8">
+		const dl = document.querySelector("#dl")
+		const zc = document.querySelector("#zc")
+		const text = document.querySelector("[type=text]")
+		const password = document.querySelector("[type=password]")
+		const ts = document.querySelectorAll(".ts")
+		const wenz = document.querySelector(".wenz")
+		const fh = document.querySelector(".fh")
+		const qrmm = document.querySelector(".qrmm")
+		const inqr = document.querySelector("#qrmm")
+		//判断长度
+		//判断账号长度
+		text.addEventListener("keyup",function(){
+			if(text.value.trim().length === 0){
+				ts[0].classList.remove("tsxs")
+				ts[0].innerHTML=""
+			}else if(text.value.trim().length<6){
+				ts[0].classList.add("tsxs")
+				ts[0].innerHTML="账号长度要为6为数"
+			}else{
+				ts[0].classList.remove("tsxs")
+				ts[0].innerHTML=""
+			}
+		})
+		//判断密码长度
+		password.addEventListener("keyup",function(){
+			if(password.value.trim().length === 0){
+				ts[1].classList.remove("tsxs")
+				ts[1].innerHTML=""
+			}else if(password.value.trim().length<6){
+				ts[1].classList.add("tsxs")
+				ts[1].innerHTML="密码长度要为6为数"
+			}else{
+				ts[1].classList.remove("tsxs")
+				ts[1].innerHTML=""
+			}
+		})
+		//注册二次验证密码
+		inqr.addEventListener("keyup",function(){
+			if(inqr.value.trim()!=password.value.trim()){
+				ts[2].classList.add("tsxs")
+				ts[2].innerHTML="两次密码不同，请从新输入"
+			}else{
+				ts[2].classList.remove("tsxs")
+				ts[2].innerHTML=""
+			}
+			if(inqr.value.trim().length===0){
+				ts[2].classList.remove("tsxs")
+				ts[2].innerHTML=""
+			}
+		})
+		//注册
+		zc.addEventListener("click",function(){
+			var zh = document.querySelector("#zh").value.trim()
+			var mm = document.querySelector("#mm").value.trim()
+			var qrmm = document.querySelector("#qrmm").value.trim()
+			var users = JSON.parse(localStorage.getItem("users") || "{}")
+			console.log(users[zh])
+			if(zh==""||mm==""||qrmm==""){
+				mui.toast("账号和密码不能为空")
+			}else if(zh.length<6 || mm.length<6 || qrmm.length<6){
+				mui.toast("账号和密码的长度不对")
+			}else if(mm!=qrmm){
+				mui.toast("密码不同")
+			}else if(users[zh]){
+				mui.toast("已经被注册了")
+			}else{
+				users[zh] = mm
+				localStorage.setItem("users",JSON.stringify(users))
+				mui.toast("注册成功")
+				fh.click()
+			}
+		})
+		//登录
+		dl.addEventListener("click",function(){
+			var zh = document.querySelector("#zh").value.trim()
+			var mm = document.querySelector("#mm").value.trim()
+			var users = JSON.parse(localStorage.getItem("users") || "{}")
+			console.log(users)
+			if(zh=="" || mm==""){
+				// alert("nh")
+				mui.toast("账号和密码不能为空")
+			}
+			else if(users[zh]!==mm){
+				mui.toast("账号或者密码错误")
+			}else{
+				mui.toast("登录成功")
+				dl.innerHTML = "登录成功"
+				dl.disabled = true
+				setTimeout(function(){
+					window.location.replace("./Home.html")
+				},3000)
+				// localStorage.setItem(zh,mm)
+				dl.style.backgroundColor = "#808080"
+			}
+		})
+		//切换注册
+		wenz.addEventListener("click",function(e){
+			// console.log(e.target.dataset.name)
+			if(e.target.dataset.name === "zczh"){
+				document.querySelector(".btu .zczh").classList.remove("zczh")
+				dl.classList.add("zczh")
+				fh.style.display = "block"
+				qrmm.style.display = "block"
+				text.value=""
+				password.value=""
+				inqr.value=""
+				ts[0].classList.remove("tsxs")
+				ts[1].classList.remove("tsxs")
+				ts[2].classList.remove("tsxs")
+			}else{
+				return
+			}
+		})
+		//返回登录
+		fh.addEventListener("click",function(){
+			document.querySelector(".btu .zczh").classList.remove("zczh")
+			zc.classList.add("zczh")
+			fh.style.display = "none"
+			qrmm.style.display = "none"
+			text.value=""
+			password.value=""
+			inqr.value=""
+		})
+		
+	</script>
+</body>
+</html>

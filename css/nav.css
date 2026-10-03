@@ -1,0 +1,209 @@
+.liquid-glass-nav {
+      /* 固定底部，宽度全屏，不调整位置和大小 —— 完全按用户要求 */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;               /* 固定高度，符合常见底部栏 */
+      
+      /* 液态玻璃核心：背景模糊 + 半透明 + 光感 */
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      
+      /* 玻璃边缘的高光与阴影，形成立体折射感 */
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 
+        0 -8px 32px rgba(0, 0, 0, 0.4),        /* 底部深阴影，增强悬浮感 */
+        inset 0 1px 0 rgba(255, 255, 255, 0.3), /* 顶部内高光，模仿玻璃边缘 */
+        inset 0 -4px 12px rgba(0, 0, 0, 0.1);   /* 底部内阴影，增加厚度 */
+      
+      /* 圆角只在上方，底部直角 */
+      border-radius: 28px 28px 0 0;
+      
+      /* 内部布局：弹性居中，图标均匀分布 */
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      
+      /* 文字颜色和微光 */
+      color: #ffffffd9;
+      font-size: 13px;
+      
+      /* 添加微妙的液态流动感（伪元素流光，见下方） */
+      overflow: hidden;
+      isolation: isolate;  /* 为伪元素混合模式建立独立层叠上下文 */
+    }
+
+    /* 液态流光 – 用半透明白色渐变在玻璃内部缓慢移动，模仿液体折射 */
+    .liquid-glass-nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.05) 45%,
+        transparent 70%
+      );
+      /* 流动动画：通过改变渐变中心位置产生“液态感” */
+      animation: liquidFlow 8s ease-in-out infinite alternate;
+      pointer-events: none;  /* 确保不干扰点击 */
+      mix-blend-mode: overlay; /* 让光晕与背景融合，更自然 */
+    }
+
+    /* 第二个伪元素：更柔和的第二层流动，增加深度 */
+    .liquid-glass-nav::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(
+        circle at 70% 70%,
+        rgba(180, 220, 255, 0.25) 0%,
+        rgba(200, 230, 255, 0.05) 50%,
+        transparent 80%
+      );
+      animation: liquidFlowReverse 10s ease-in-out infinite alternate;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    /* 流动动画 */
+    @keyframes liquidFlow {
+      0% { background-position: 0% 0%; background-size: 200% 200%; }
+      50% { background-position: 60% 40%; background-size: 220% 220%; }
+      100% { background-position: 100% 100%; background-size: 200% 200%; }
+    }
+
+    @keyframes liquidFlowReverse {
+      0% { background-position: 100% 100%; background-size: 180% 180%; }
+      50% { background-position: 30% 70%; background-size: 210% 210%; }
+      100% { background-position: 0% 0%; background-size: 180% 180%; }
+    }
+
+    导航项 – 每个按钮是一个独立的玻璃块
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+      /* 初始微透背景，让每个图标有独立玻璃感 */
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      /* 文字和图标颜色 */
+      color: #f0f4ff;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+      /* 过渡+微光 */
+      position: relative;
+      z-index: 2; /* 确保在伪元素光晕之上 */
+    }
+
+    /* 悬浮效果 – 像水滴一样凝聚 */
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 6px 16px rgba(0, 255, 255, 0.15),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+      transform: translateY(-3px);
+      color: #ffffff;
+    }
+
+    /* 点击时的微小按压感 */
+    .nav-item:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 图标使用 SVG 或 unicode，我们使用简单的 SVG 风格文本图标，但为了更现代，用内联 SVG 更好 */
+    .nav-icon {
+      width: 26px;
+      height: 26px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+      transition: transform 0.2s ease;
+    }
+
+    /* 悬停时图标轻微放大，模拟玻璃凸起 */
+    .nav-item:hover .nav-icon {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 8px rgba(0, 200, 255, 0.4));
+    }
+
+    /* 标签文字 */
+    .nav-label {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.9;
+      letter-spacing: 0.2px;
+      transition: opacity 0.2s, text-shadow 0.2s;
+    }
+
+    .nav-item:hover .nav-label {
+      opacity: 1;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    /* 小提示：活跃状态（可选），没有激活逻辑但展示可用性 */
+    .nav-item.active {
+      background: rgba(100, 210, 255, 0.2);
+      border-color: rgba(100, 210, 255, 0.6);
+      box-shadow: 0 0 16px rgba(0, 200, 255, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    /* 为了展示背景，添加一些页面内容 */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #c0c8dd;
+      padding: 24px;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .content h1 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #ffffff, #a0c0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 20px rgba(0, 160, 255, 0.3);
+    }
+
+    .content p {
+      max-width: 400px;
+      font-size: 15px;
+      line-height: 1.6;
+      opacity: 0.7;
+    }
+
+    /* 小装饰，显示液态玻璃反光 */
+    .content .glass-spark {
+      width: 120px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      border-radius: 4px;
+      margin-top: 20px;
+    }

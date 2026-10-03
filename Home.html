@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- <link href="css/mui.css" rel="stylesheet" /> -->
+		<link rel="stylesheet" href="./css/main.css" />
+		<link rel="stylesheet" href="./css/nav.css" />
+		<style type="text/css">
+			.box{
+				width: 100%;
+				height: 100%;
+				background-color: char;
+			}
+			.xinx{
+				width: 94%;
+				height: 110px;
+				margin: auto;
+				background-color: aqua;
+				border-radius: 10px;
+				display: flex;
+			}
+			.tp{
+				width: 25%;
+				height: 90%;
+				padding: 5px 15px 0 5px ;
+				border-radius: 20px;
+			}
+			.nr{
+				width: 75%;
+				height: 80%;
+				margin: auto;
+			}
+			.nr h3{
+				margin: 0;
+			}
+			.yc{
+				display: block;
+				overflow: hidden;
+			}
+			button{
+				width: 150px;
+				height: 60px;
+				background-color: blue;
+				border-radius: 20px;
+				position: fixed;
+				bottom: 88px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+			.shanbianj{
+				margin-top: 20px;
+			}
+			.ychz{
+				display: none;
+			}
+			.ychz {
+			  opacity: 1;
+			  transition: opacity 0.3s;
+			  @starting-style {
+			    opacity: 0;
+			  }
+			}
+			.guob{
+				position: absolute;
+				top: 20px;
+				left: 82%;
+			}
+			.guob img{
+				width: 50px;
+				height: 50px;
+			}
+			.yhshur{
+				width: 99%;
+				height: 20vh;
+				/* background-color: black; */
+				margin-top: 35px;
+			}
+			.nav{
+				width: 100%;
+				height: 8vh;
+				/* background-color: aqua;	 */
+				position: fixed;
+				bottom: 5px;
+				
+			}
+			.qcyc{
+				width: 100%;
+				height: 100%;
+				background-color: #ffffff;
+				z-index: 9999;
+				display: block;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="qcyc" id="pgyc">
+			<div id = "list">
+				<div class="box">
+					<div class="xinx">
+							<img src="./img/头像.jpg" alt="" class="tp">
+						<div class="nr yc">
+							<h3>标题</h3>
+							<span>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<button id="tj">添加</button>
+		</div>
+		<div class="liquid-glass ychz" style="height: 75vh;" id="shur">
+			<div id="guob" class="guob">
+				<img src="./img/关闭.png" alt="关闭" />
+			</div>
+			<div class="yhshur">
+				<div>
+					<h3>标题</h3>
+					<input type="text" id = "biaot">
+				</div>
+				<div>
+					<h3>内容</h3>
+					<input type="text" id="ner">
+				</div>
+				<button id="tijiao">提交</button>
+			</div>
+		</div>
+		
+		<div class="nav liquid-glass-nav">
+			
+		</div>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			const btn = document.querySelector("#tj")
+			const list = document.querySelector("#list")
+			const shur = document.querySelector("#shur")
+			const guanbi = document.querySelector("#guob")
+			const tijiao = document.querySelector("#tijiao")
+			const pmyc = document.querySelector("#pgyc")
+			// btn.addEventListener("click",function(){
+			// 	list.innerHTML += `
+			// 	<div class="box shanbianj">
+			// 		<div class="xinx">
+			// 				<img src="./img/头像.jpg" alt="" class="tp">
+			// 			<div class="nr yc">
+			// 				<h3>标题</h3>
+			// 				<span>内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</span>
+			// 			</div>
+			// 		</div>
+			// 	</div>
+			// 	`
+			// })
+			btn.addEventListener("click",function(){
+				shur.style.display="block"
+				pmyc.style.display = "none"
+			})
+			guanbi.addEventListener("click",function(){
+				shur.style.display="none"
+				pmyc.style.display = "block"
+			})
+			tijiao.addEventListener("click",function(){
+				var bt = document.querySelector("#biaot").value
+				var nr = document.querySelector("#ner").value
+				
+				list.innerHTML += `
+				<div class="box shanbianj">
+					<div class="xinx">
+							<img src="./img/头像.jpg" alt="" class="tp">
+						<div class="nr yc">
+							<h3>${bt}</h3>
+							<span>${nr}</span>
+						</div>
+					</div>
+				</div>
+				`
+				shur.style.display="none"
+				pmyc.style.display = "block"
+				document.querySelector("#biaot").value = ""
+				document.querySelector("#ner").value = ""
+			})
+			
+		</script>
+	</body>
+
+</html>

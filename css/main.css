@@ -1,0 +1,241 @@
+.liquid-glass {
+			height: 700px;
+            position: absolute;
+            top: 46%;           /* 垂直居中 */
+            left: 50%;          /* 水平居中 */
+            transform: translate(-50%, -50%); /* 精确居中 */
+            z-index: 999;       /* 确保它盖在所有内容的最上面 */
+            width: 75vw;
+            padding: 3rem 2.5rem;
+            border-radius: 4rem 4rem 4rem 4rem; /* 较大的圆角更显流动 */
+            
+            /* 关键1：半透明底色 + 轻微蓝白调，制造“液态”基础 */
+            background: rgba(255, 255, 255, 0.08);
+            
+            /* 关键2：backdrop-filter 毛玻璃核心 —— 模糊背景并增加饱和度/亮度 */
+            backdrop-filter: blur(16px) saturate(200%) brightness(1.1);
+            -webkit-backdrop-filter: blur(16px) saturate(200%) brightness(1.1);
+            
+            /* 关键3：细腻的白色边框 + 内发光 / 阴影 制造玻璃厚度 */
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            
+            /* 关键4：多层阴影：外部弥散阴影 + 内阴影(模拟玻璃边缘反光) */
+            box-shadow: 
+                0 20px 40px -10px rgba(0, 0, 0, 0.5),          /* 外部深邃阴影 */
+                0 0 0 0.5px rgba(255, 255, 255, 0.2) inset,    /* 极细内圈高光 */
+                0 10px 20px -5px rgba(0, 0, 0, 0.3) inset,     /* 内部暗角 */
+                0 0 30px 5px rgba(255, 255, 255, 0.1) inset;   /* 内部发光 */
+            
+            /* 关键5：微妙的背景渐变叠加，让玻璃看起来有“流动感” */
+            background-image: 
+                linear-gradient(145deg, 
+                    rgba(255, 255, 255, 0.2) 0%, 
+                    rgba(255, 255, 255, 0.02) 40%,
+                    rgba(200, 230, 255, 0.05) 70%,
+                    rgba(255, 255, 255, 0.1) 100%
+                );
+            
+            /* 关键6：用伪元素做“液态高光流动” */
+            isolation: isolate; /* 确保伪元素在背景之上，但不影响内容 */
+            transition: box-shadow 0.3s, backdrop-filter 0.3s;
+			
+        }
+
+        /* 高光流动层：模拟液体表面的反射与流动 */
+        .liquid-glass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px; /* 让高光只出现在边缘附近？不，我们用径向渐变做流动感 */
+            
+            background: radial-gradient(
+                circle at 20% 30%,
+                rgba(255, 255, 255, 0.6) 0%,
+                transparent 40%
+            ),
+            radial-gradient(
+                circle at 80% 70%,
+                rgba(180, 220, 255, 0.5) 0%,
+                transparent 50%
+            ),
+            radial-gradient(
+                circle at 40% 80%,
+                rgba(255, 220, 240, 0.4) 0%,
+                transparent 45%
+            );
+            
+            /* 关键：让高光只出现在边框附近，并且模糊，形成液态流动光 */
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            
+            /* 轻微模糊，让光晕更柔和 */
+            filter: blur(4px);
+            opacity: 0.7;
+            z-index: -1; /* 放到内容后面，但又在背景之上？使用isolate + z-index */
+            pointer-events: none;
+            
+            /* 让高光缓慢旋转，产生流动感 */
+            animation: liquidShine 8s infinite alternate ease-in-out;
+        }
+
+        /* 第二个伪元素：一个额外的细微光泽，增加液体感 */
+        .liquid-glass::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: inherit;
+            background: radial-gradient(
+                circle at 30% 40%,
+                rgba(255, 255, 255, 0.25) 0%,
+                rgba(255, 255, 255, 0.02) 60%,
+                transparent 80%
+            );
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        @keyframes liquidShine {
+            0% {
+                background-position: 0% 0%, 100% 100%, 30% 70%;
+                opacity: 0.6;
+            }
+            100% {
+                background-position: 30% 40%, 70% 30%, 60% 20%;
+                opacity: 1;
+            }
+        }
+
+        /* 为了让背景位置动画生效，需要设置background-size为较大值，但径向渐变默认是固定位置，改用background-position动画需要配合background-size？ 
+           简单点：我们使用伪元素的transform旋转来实现光斑移动感觉？或者使用背景位置的动画，但径向渐变background-position其实需要配合background-size才有效。
+           为了更方便，改用conic-gradient或者不依赖background-position？但是用 mask 复杂，不如再套一个旋转层。
+           但考虑到兼容，我们简化：去掉 background-position 动画，改用略微旋转伪元素？或者维持原有，但使用伪元素的 transform 旋转光斑？*/
+        /* 重新设计伪元素高光动画：用旋转一个带光斑的伪元素，但可能会超出圆角。我们用clip-path? 为了简洁，改为使用两层额外的渐变 + 旋转，可能影响性能。我们换一种方式：保留之前的结构，但把动画改为用 transform 轻微旋转（因为径向渐变是相对元素本身，旋转整个伪元素会导致高光位置变化）*/
+        /* 修正：由于我们用mask只保留边框区域，旋转伪元素会让模糊的光斑沿边缘流动，看起来像是液态反光。但mask区是边框，旋转会造成不可控。干脆去掉mask，用更简单的方法：整个伪元素作为背景光斑，但是使用mix-blend-mode和较低的透明度，并加旋转？这样可能覆盖整个卡片，但我们有低透明度，也会好看。那就直接覆盖整个卡片，用低透明度+模糊，让光斑像液体一样流动，同时背景还有玻璃透明感。就这么干。*/
+        
+        /* 重写伪元素部分，不采用mask，简化且效果好 */
+        .liquid-glass::before {
+            content: "";
+            position: absolute;
+            inset: -20%; /* 超出边框，让光斑可以旋转流动 */
+            border-radius: inherit;
+            background: radial-gradient(
+                circle at 30% 40%,
+                rgba(255, 255, 255, 0.5) 0%,
+                rgba(200, 230, 255, 0.2) 30%,
+                transparent 60%
+            );
+            filter: blur(25px);
+            opacity: 0.8;
+            animation: rotateFlow 12s infinite alternate ease-in-out;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .liquid-glass::after {
+            content: "";
+            position: absolute;
+            inset: -10%;
+            border-radius: inherit;
+            background: radial-gradient(
+                circle at 70% 60%,
+                rgba(220, 180, 255, 0.4) 0%,
+                rgba(255, 200, 200, 0.1) 40%,
+                transparent 70%
+            );
+            filter: blur(30px);
+            opacity: 0.6;
+            animation: rotateFlow2 14s infinite alternate ease-in-out;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        @keyframes rotateFlow {
+            0% {
+                transform: rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: rotate(15deg) scale(1.4);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rotateFlow2 {
+            0% {
+                transform: rotate(0deg) scale(1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: rotate(-20deg) scale(1.5);
+                opacity: 0.8;
+            }
+        }
+
+        /* 卡片内部内容——增加清晰层次 */
+        .content {
+            position: relative;
+            z-index: 5;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .content h1 {
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, #d9eaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .content p {
+            font-size: clamp(0.95rem, 3vw, 1.2rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            max-width: 90%;
+        }
+
+        .content .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 让玻璃更明显 —— 加一个鼠标悬停微动效果 (可选) */
+        .liquid-glass:hover {
+            backdrop-filter: blur(18px) saturate(220%) brightness(1.15);
+            -webkit-backdrop-filter: blur(18px) saturate(220%) brightness(1.15);
+            box-shadow: 
+                0 25px 45px -8px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+                0 10px 25px -5px rgba(0, 0, 0, 0.4) inset,
+                0 0 40px 10px rgba(255, 255, 255, 0.15) inset;
+            transition: all 0.3s ease;
+        }
+
+        /* 适配小屏 */
+        @media (max-width: 480px) {
+            .liquid-glass {
+                padding: 2rem 1.5rem;
+                border-radius: 2.5rem;
+            }
+        }
